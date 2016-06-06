@@ -47,7 +47,7 @@ public class Player {
 	private int mVerticalGravityDirection = 1;
 	
 	private boolean mIsJumping = false;
-	private float mGravity = 0.5f;
+	private float mGravity = 0.3f;
 	private float mVerticalAcceleration = 0;
 	private float mJumpStrength = 4f;
 	
@@ -215,8 +215,10 @@ public class Player {
 	}
 	
 	public void update(GameContainer container, int delta) {
+		// Get user input
 		getInput(container);
 		
+		// Apply gravity to player
 		applyGravity();
 	}
 }

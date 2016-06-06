@@ -70,7 +70,7 @@ public class Level1State extends BasicGameState {
 	// Current state of the level (playing or finished)
 	private LevelState mCurrentLevelState = LevelState.PLAYING;
 	
-	// Random string extracted when palyer wins
+	// Random string extracted when player wins
 	private String mLevelWinString;
 	
 	// Player
