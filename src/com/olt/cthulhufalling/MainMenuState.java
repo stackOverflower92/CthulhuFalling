@@ -27,37 +27,60 @@ public class MainMenuState extends BasicGameState {
 	private Image mBackgroundImage;
 	
 	private Font mTitleFont;
-	private Font mMenuFont;
 	private TrueTypeFont mTTFont;
-	private TrueTypeFont mMenuTTFont;
+	private int mTitleTop = 30;
+	
+	private Menu mMenu;
 	
 	// Game holding this state
 	private StateBasedGame game;
 	
 	private void initMainMenu() {
+		mMenu = new Menu(
+				new MenuItem[] {
+						new MenuItem("Play", new IMenuItemFunction() {
+							@Override
+							public void execute() {
+								game.enterState(Level1State.id, new FadeOutTransition(Color.black), new FadeInTransition(Color.black));
+							}
+						}),
+						new MenuItem("Options", new IMenuItemFunction() {
+							@Override
+							public void execute() {
+								System.out.println("Options pressed");
+							}
+						}),
+						new MenuItem("Exit", new IMenuItemFunction() {
+							@Override
+							public void execute() {
+								System.out.println("Exit pressed");
+							}
+						})
+				}
+		);
+		
+		mMenu.init();
+		
 		try {
 			mTitleFont = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream("assets/fonts/lolita_font.ttf"));
-			mTitleFont = mTitleFont.deriveFont(55f);
+			mTitleFont = mTitleFont.deriveFont(52f);
 			mTTFont = new TrueTypeFont(mTitleFont, true);
-			
-			mMenuFont = Font.createFont(Font.TRUETYPE_FONT, ResourceLoader.getResourceAsStream("assets/fonts/plain_font.ttf"));
-			mMenuFont = mMenuFont.deriveFont(30f);
-			mMenuTTFont = new TrueTypeFont(mMenuFont, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void drawMainMenu(Graphics graphics) {	
-		mBackgroundImage.draw(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
-		mTTFont.drawString((Constants.SCREEN_WIDTH / 2) - (mTTFont.getWidth("Cthulhu Falling") / 2), Constants.SCREEN_HEIGHT / 10, "Cthulhu Falling", Color.red);
-		
-		graphics.resetFont();
-		graphics.setColor(Color.white);
-		
-		mMenuTTFont.drawString((Constants.SCREEN_WIDTH / 2) - (mMenuTTFont.getWidth("Play Game") / 2), (Constants.SCREEN_HEIGHT / 2) + 100, "Play Game");
-		mMenuTTFont.drawString((Constants.SCREEN_WIDTH / 2) - (mMenuTTFont.getWidth("High Scores") / 2), (Constants.SCREEN_HEIGHT / 2) + 140, "High Scores");
-		mMenuTTFont.drawString((Constants.SCREEN_WIDTH / 2) - (mMenuTTFont.getWidth("Quit") / 2), (Constants.SCREEN_HEIGHT / 2) + 180, "Quit");
+		mMenu.render(graphics);
+	}
+	
+	private void drawGameTitle(Graphics graphics) {
+		mTTFont.drawString(
+				(Constants.SCREEN_WIDTH / 2) - (mTTFont.getWidth(Constants.GAME_NAME) / 2),
+				mTitleTop,
+				Constants.GAME_NAME,
+				Color.red
+		);
 	}
 	
 	@Override
@@ -73,12 +96,17 @@ public class MainMenuState extends BasicGameState {
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics graphics) throws SlickException {
+		mBackgroundImage.draw(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+		
+		drawGameTitle(graphics);
 		drawMainMenu(graphics);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		Input input = container.getInput();
+		
+		mMenu.update(container, delta);
 		
 		// Add input logic
 		if (input.isKeyDown(Input.KEY_1)) {

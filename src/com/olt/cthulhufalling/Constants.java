@@ -13,4 +13,5 @@ public class Constants {
 		"BOOM BABY!",
 		"YOU NAILED IT!"
 	};
+	public static String GAME_NAME = "Cthulhu Falling";
 }
