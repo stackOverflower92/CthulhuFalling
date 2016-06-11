@@ -1,5 +1,6 @@
 package com.olt.cthulhufalling;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -53,6 +54,12 @@ public class Player {
 	
 	private BasicGameState mCurrentLevel;
 	
+	// Tiles for collisions
+	private Tile mTopBoundingTile;
+	private Tile mLeftBoundingTile;
+	private Tile mRightBoundingTile;
+	private Tile mBottomBoundingTile;
+	
 	// Constructors
 	public Player() {
 		init();
@@ -92,6 +99,38 @@ public class Player {
 		}
 	}
 	
+	public Tile getTopBoundingTile() {
+		return mTopBoundingTile;
+	}
+
+	public void setTopBoundingTile(Tile mTopBoundingTile) {
+		this.mTopBoundingTile = mTopBoundingTile;
+	}
+
+	public Tile getLeftBoundingTile() {
+		return mLeftBoundingTile;
+	}
+
+	public void setLeftBoundingTile(Tile mLeftBoundingTile) {
+		this.mLeftBoundingTile = mLeftBoundingTile;
+	}
+
+	public Tile getRightBoundingTile() {
+		return mRightBoundingTile;
+	}
+
+	public void setRightBoundingTile(Tile mRightBoundingTile) {
+		this.mRightBoundingTile = mRightBoundingTile;
+	}
+
+	public Tile getBottomBoundingTile() {
+		return mBottomBoundingTile;
+	}
+
+	public void setBottomBoundingTile(Tile mBottomBoundingTile) {
+		this.mBottomBoundingTile = mBottomBoundingTile;
+	}
+
 	private void runRight() {
 		// Set animation
 		mCurrentAnimation = mRunRightAnimation;
@@ -140,12 +179,49 @@ public class Player {
 		return mRect;
 	}
 	
+	
+	public void renderBoundingTiles(Graphics graphics) {
+		graphics.setColor(Color.white);
+		
+		if (mTopBoundingTile != null)
+			graphics.drawRect(
+					mTopBoundingTile.getRect().getX(),
+					mTopBoundingTile.getRect().getY(),
+					mTopBoundingTile.getRect().getWidth(),
+					mTopBoundingTile.getRect().getHeight()
+			);
+		
+		if (mBottomBoundingTile != null)
+			graphics.drawRect(
+					mBottomBoundingTile.getRect().getX(),
+					mBottomBoundingTile.getRect().getY(),
+					mBottomBoundingTile.getRect().getWidth(),
+					mBottomBoundingTile.getRect().getHeight()
+			);
+		
+		if (mLeftBoundingTile != null)
+			graphics.drawRect(
+					mLeftBoundingTile.getRect().getX(),
+					mLeftBoundingTile.getRect().getY(),
+					mLeftBoundingTile.getRect().getWidth(),
+					mLeftBoundingTile.getRect().getHeight()
+			);
+		
+		if (mRightBoundingTile != null)
+			graphics.drawRect(
+					mRightBoundingTile.getRect().getX(),
+					mRightBoundingTile.getRect().getY(),
+					mRightBoundingTile.getRect().getWidth(),
+					mRightBoundingTile.getRect().getHeight()
+			);
+	}
+	
 	public void init() {
 		// Set current bonus to null (no bonus in the beginning)
 		mCurrentBonus = null;
 		
 		// Set initial dimensions for player
-		mRect = new Rectangle(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT - 100, 70, 70);
+		mRect = new Rectangle(Constants.SCREEN_WIDTH / 2, Constants.SCREEN_HEIGHT - 100, Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
 		
 		// Init all animation frames
 		try {

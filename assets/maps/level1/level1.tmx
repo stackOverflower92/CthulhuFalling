@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="10" height="200" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="block" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+  <image source="../../../../../../../../Images/Idiozie/block.jpg" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="2" name="air" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+  <image source="../../../../../../../../Images/Idiozie/air.jpg" width="32" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="collision" value="false"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Livello tile 1" width="10" height="200" offsetx="-5" offsety="-227">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC81WSxbEIAxqe/9Dz6aLeXlWCZDoIhu/CRDlvq7rfuN54x7EE2I0FveO5l174l52HsmpMj9l/YozJl+Vp//5mXbi+NdYBoNdvCD9wXDqyp3RlUNDDv7QHFi8Y71KbS7unLpH+syFi/re7NSLsobVAsOlmwvHmQ5OXH2RxV7FYyd3zP7sH67WguTRhYs7EA8cPZqzTof+UK6r9OD4d905Zfaf4l8yNZ3Qb0j/O96ZCkyq/0v0HseaDowzWoq6qPS5iPYQ/FRcTvURau4n928ljuj5ld6AwSbDm+t/VHhx1sS8Hw6s2VoUDGc+UPUdK5/JeuIsJ1VrO7jN4KdqZnXPTlxmuXTnuFN3DHcMxrt4RrHoXOPipBOfEacd/YzirbxrDr6q+kjBFalb5c7BfbUvG52Pvo0qfqt+mcUP9uhmFUAfAAA=
+  </data>
+ </layer>
+</map>

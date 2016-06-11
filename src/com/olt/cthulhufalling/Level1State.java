@@ -9,6 +9,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.ShapeFill;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.fills.GradientFill;
@@ -17,6 +18,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.tiled.TiledMap;
 
 
 public class Level1State extends BasicGameState {
@@ -75,6 +77,17 @@ public class Level1State extends BasicGameState {
 	
 	// Player
 	private Player mPlayer;
+	
+	// Speed and time for slow down and reverse time
+	private int mSlowTimeDuration = 1000;
+	private int mReverseTimeDuration = 1000;
+	
+	// Tiled map
+	private TiledMap mMap;
+	private Tile[][] mMapBlocks;
+	
+	// Camera
+	private Camera mCamera;
 
 	private void addBonus(Bonus bonus) {
 		mGameBonuses.add(bonus);
@@ -178,6 +191,92 @@ public class Level1State extends BasicGameState {
 		return result;
 	}
 	
+	
+	
+	private void updatePlayerCollisions() {
+		
+	}
+	
+	private void getMapBlocks() {
+		// Create 2d array of tiles
+		mMapBlocks = new Tile[mMap.getWidth()][mMap.getHeight()];
+		
+		System.out.println("map[] len: " + mMapBlocks.length + " map[][] len: " + mMapBlocks[0].length);
+		
+		for (int i = 0; i < mMap.getWidth(); i++) {
+			for (int j = 0; j < mMap.getHeight(); j++) {
+				int _tile = mMap.getTileId(i, j, 0);
+				String value = mMap.getTileProperty(_tile, "collision", "false");
+				
+				if (value == "true") {
+					mMapBlocks[i][j] = new Tile(
+								new Rectangle(i * Constants.TILE_WIDTH, j * Constants.TILE_HEIGHT, Constants.TILE_WIDTH, Constants.TILE_HEIGHT),
+								TileType.COLLISION
+							);
+				} else {
+					mMapBlocks[i][j] = new Tile(
+							new Rectangle(i * Constants.TILE_WIDTH, j * Constants.TILE_HEIGHT, Constants.TILE_WIDTH, Constants.TILE_HEIGHT),
+							TileType.AIR
+						);
+				}
+			}
+		}
+	}
+
+	private Vector2f getPlayerPositionTileCoordinate() {
+		// Loop through tiles matrix
+		if (mPlayer != null) {
+			
+			for (int i = 0; i < mMapBlocks.length; i++) {
+				for (int j = 0; j < mMapBlocks[i].length; j++) {
+					
+					Vector2f _playerWorldCoordPosition = new Vector2f(mPlayer.getRect().getX(), mPlayer.getRect().getY());
+					
+					if (mMapBlocks[i][j].getRect().contains(
+							_playerWorldCoordPosition.getX() + Constants.TILE_WIDTH / 2,
+							_playerWorldCoordPosition.getY() + Constants.TILE_HEIGHT / 2)
+						) {
+						// This is our tile, let's return array coordinates
+						return new Vector2f(i, j - (Constants.SCREEN_HEIGHT / Constants.TILE_HEIGHT));
+					}
+				}
+			}
+			
+		}
+		
+		// This should not happen
+		return new Vector2f(0f, 0f);
+	}
+	
+	private void setPlayerBoundingTiles() {
+		Vector2f _playerTilePos = getPlayerPositionTileCoordinate();
+		
+		// Get bounding tiles
+		if (_playerTilePos.getY() < mMap.getHeight())
+			mPlayer.setTopBoundingTile(mMapBlocks[(int)_playerTilePos.getX()][(int)(_playerTilePos.getY() - 1)]);
+		else 
+			mPlayer.setTopBoundingTile(null);
+		
+		if (_playerTilePos.getY() > 0)
+			mPlayer.setBottomBoundingTile(mMapBlocks[(int)_playerTilePos.getX()][(int)_playerTilePos.getY() + 1]);
+		else
+			mPlayer.setBottomBoundingTile(null);
+		
+		if (_playerTilePos.getX() < mMap.getWidth())
+			mPlayer.setRightBoundingTile(mMapBlocks[(int)_playerTilePos.getX() + 1][(int)_playerTilePos.getY()]);
+		else
+			mPlayer.setRightBoundingTile(null);
+		
+		if (_playerTilePos.getX() > 0)
+			mPlayer.setLeftBoundingTile(mMapBlocks[(int)_playerTilePos.getX() - 1][(int)_playerTilePos.getY()]);
+		else 
+			mPlayer.setLeftBoundingTile(null);
+	}
+	
+	private void renderMap() {
+		mMap.render(0, Constants.SCREEN_HEIGHT - (mMap.getHeight() * mMap.getTileHeight()));
+	}
+	
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
@@ -200,12 +299,21 @@ public class Level1State extends BasicGameState {
 		
 		// Initialize player
 		mPlayer = new Player();
+		
+		// Initialize map
+		mMap = new TiledMap("assets/maps/level1/level1.tmx");
+		
+		// Get blocks for collisions
+		getMapBlocks();
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics graphics) throws SlickException {
 		// Draw background
 		mBackground.draw(0f, 0f, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
+		
+		// Draw map
+		renderMap();
 		
 		if (mCurrentLevelState == LevelState.PLAYING) {
 			// Draw enemies
@@ -222,6 +330,8 @@ public class Level1State extends BasicGameState {
 			
 			// Draw player
 			mPlayer.render(graphics);
+			
+			mPlayer.renderBoundingTiles(graphics);
 		}
 		if (mCurrentLevelState == LevelState.FINISHED) {
 			// Draw finish level stuff
@@ -303,6 +413,9 @@ public class Level1State extends BasicGameState {
 				System.out.println("Dead!");
 				mCurrentLevelState = LevelState.LOST;
 			}
+			
+			// Update player position in tiles coordinates
+			setPlayerBoundingTiles();
 		} 
 		if (mCurrentLevelState == LevelState.FINISHED) {
 			// Level is finished, show screen before going to next level
