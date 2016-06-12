@@ -237,7 +237,7 @@ public class Level1State extends BasicGameState {
 							_playerWorldCoordPosition.getY() + Constants.TILE_HEIGHT / 2)
 						) {
 						// This is our tile, let's return array coordinates
-						return new Vector2f(i, j - (Constants.SCREEN_HEIGHT / Constants.TILE_HEIGHT));
+						return new Vector2f(i, (j - (Constants.SCREEN_HEIGHT / Constants.TILE_HEIGHT)) * -1);
 					}
 				}
 			}
@@ -251,26 +251,36 @@ public class Level1State extends BasicGameState {
 	private void setPlayerBoundingTiles() {
 		Vector2f _playerTilePos = getPlayerPositionTileCoordinate();
 		
-		// Get bounding tiles
-		if (_playerTilePos.getY() < mMap.getHeight())
-			mPlayer.setTopBoundingTile(mMapBlocks[(int)_playerTilePos.getX()][(int)(_playerTilePos.getY() - 1)]);
-		else 
-			mPlayer.setTopBoundingTile(null);
 		
-		if (_playerTilePos.getY() > 0)
-			mPlayer.setBottomBoundingTile(mMapBlocks[(int)_playerTilePos.getX()][(int)_playerTilePos.getY() + 1]);
-		else
-			mPlayer.setBottomBoundingTile(null);
+		//System.out.println("tile: " + mMapBlocks[(int) _playerTilePos.getX()][(int) (mMap.getHeight() - _playerTilePos.getY()) -1].getType().toString());
 		
-		if (_playerTilePos.getX() < mMap.getWidth())
-			mPlayer.setRightBoundingTile(mMapBlocks[(int)_playerTilePos.getX() + 1][(int)_playerTilePos.getY()]);
-		else
-			mPlayer.setRightBoundingTile(null);
+		int playerY = (int) (mMap.getHeight() - _playerTilePos.getY() - 1);
+		int playerX = (int) _playerTilePos.getX();
 		
-		if (_playerTilePos.getX() > 0)
-			mPlayer.setLeftBoundingTile(mMapBlocks[(int)_playerTilePos.getX() - 1][(int)_playerTilePos.getY()]);
-		else 
-			mPlayer.setLeftBoundingTile(null);
+		System.out.println("X: " + playerX + " Y: " + playerY);
+		
+		if (mPlayer != null) {
+			// Get bounding tiles
+			if (playerY < mMap.getHeight())
+				mPlayer.setTopBoundingTile(mMapBlocks[playerX][mMap.getHeight() - playerY + 1]);
+			else 
+				mPlayer.setTopBoundingTile(null);
+			
+			if (playerY > 0)
+				mPlayer.setTopBoundingTile(mMapBlocks[playerX][mMap.getHeight() - playerY - 1]);
+			else
+				mPlayer.setBottomBoundingTile(null);
+			
+			if (playerX < mMap.getWidth() - 1)
+				mPlayer.setRightBoundingTile(mMapBlocks[playerX + 1][mMap.getHeight() - playerY]);
+			else
+				mPlayer.setRightBoundingTile(null);
+			
+			if (playerX > 0)
+				mPlayer.setLeftBoundingTile(mMapBlocks[playerX - 1][mMap.getHeight() - playerY]);
+			else 
+				mPlayer.setLeftBoundingTile(null);
+		}
 	}
 	
 	private void renderMap() {
