@@ -51,6 +51,7 @@ public class Player {
 	private float mGravity = 0.3f;
 	private float mVerticalAcceleration = 0;
 	private float mJumpStrength = 4f;
+	private boolean mIsGravityApplied = true;
 	
 	private BasicGameState mCurrentLevel;
 	
@@ -167,11 +168,13 @@ public class Player {
 		
 	}
 	
-	private void applyGravity() {
+	private void applyGravity(boolean apply) {
 		// Apply acceleration only if in the air
-		if ((mRect.getY() + mRect.getHeight() < Constants.SCREEN_HEIGHT)) {
-			mVerticalAcceleration += mGravity;
-			mRect.setY(mRect.getY() + mVerticalAcceleration);
+		if (apply) {
+			if ((mRect.getY() + mRect.getHeight() < Constants.SCREEN_HEIGHT)) {
+				mVerticalAcceleration += mGravity;
+				mRect.setY(mRect.getY() + mVerticalAcceleration);
+			}
 		}
 	}
 	
@@ -179,6 +182,9 @@ public class Player {
 		return mRect;
 	}
 	
+	public void isGravityApplied(boolean applied) {
+		mIsGravityApplied = applied;
+	}
 	
 	public void renderBoundingTiles(Graphics graphics) {
 		graphics.setColor(Color.white);
@@ -295,6 +301,6 @@ public class Player {
 		getInput(container);
 		
 		// Apply gravity to player
-		applyGravity();
+		applyGravity(mIsGravityApplied);
 	}
 }

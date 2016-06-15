@@ -193,8 +193,88 @@ public class Level1State extends BasicGameState {
 	
 	
 	
-	private void updatePlayerCollisions() {
-		
+	private void updatePlayerBottomCollision() {
+		// Check every bounding tile intersection
+		for (int i = 0; i < mMapBlocks.length; i++) {
+			for (int j = 0; j < mMapBlocks[i].length; j++) {
+				if (mPlayer.getBottomBoundingTile().getRect().intersects(mMapBlocks[i][j].getRect())
+						&& mMapBlocks[i][j].getType() == TileType.COLLISION) {
+					// Bounding tile is intersecting some world tile, let's calculate collision point
+					float _farPoint = mPlayer.getBottomBoundingTile().getRect().getY() - Constants.TILE_HEIGHT;
+					float _closePoint = mPlayer.getBottomBoundingTile().getRect().getY();
+					
+					// Now stop vertical motion if points become the same
+					if (_farPoint == _closePoint) {
+						mPlayer.isGravityApplied(false);
+					} else {
+						mPlayer.isGravityApplied(true);
+					}
+				}
+			}
+		}
+	}
+	
+	private void updatePlayerLeftCollision() {
+		// Check every bounding tile intersection
+		for (int i = 0; i < mMapBlocks.length; i++) {
+			for (int j = 0; j < mMapBlocks[i].length; j++) {
+				if (mPlayer.getBottomBoundingTile().getRect().intersects(mMapBlocks[i][j].getRect())
+						&& mMapBlocks[i][j].getType() == TileType.COLLISION) {
+					// Bounding tile is intersecting some world tile, let's calculate collision point
+					float _farPoint = mPlayer.getLeftBoundingTile().getRect().getX() - Constants.TILE_WIDTH;
+					float _closePoint = mPlayer.getLeftBoundingTile().getRect().getX();
+					
+					// Now stop vertical motion if points become the same
+					if (_farPoint == _closePoint) {
+						mPlayer.isGravityApplied(false);
+					} else {
+						mPlayer.isGravityApplied(true);
+					}
+				}
+			}
+		}
+	}
+	
+	private void updatePlayerTopCollision() {
+		// Check every bounding tile intersection
+		for (int i = 0; i < mMapBlocks.length; i++) {
+			for (int j = 0; j < mMapBlocks[i].length; j++) {
+				if (mPlayer.getBottomBoundingTile().getRect().intersects(mMapBlocks[i][j].getRect())
+						&& mMapBlocks[i][j].getType() == TileType.COLLISION) {
+					// Bounding tile is intersecting some world tile, let's calculate collision point
+					float _farPoint = mPlayer.getTopBoundingTile().getRect().getY() - Constants.TILE_HEIGHT;
+					float _closePoint = mPlayer.getTopBoundingTile().getRect().getY();
+					
+					// Now stop vertical motion if points become the same
+					if (_farPoint == _closePoint) {
+						mPlayer.isGravityApplied(false);
+					} else {
+						mPlayer.isGravityApplied(true);
+					}
+				}
+			}
+		}
+	}
+	
+	private void updatePlayerRightCollision() {
+		// Check every bounding tile intersection
+		for (int i = 0; i < mMapBlocks.length; i++) {
+			for (int j = 0; j < mMapBlocks[i].length; j++) {
+				if (mPlayer.getBottomBoundingTile().getRect().intersects(mMapBlocks[i][j].getRect())
+						&& mMapBlocks[i][j].getType() == TileType.COLLISION) {
+					// Bounding tile is intersecting some world tile, let's calculate collision point
+					float _farPoint = mPlayer.getRightBoundingTile().getRect().getX() + Constants.TILE_WIDTH;
+					float _closePoint = mPlayer.getRightBoundingTile().getRect().getX();
+					
+					// Now stop vertical motion if points become the same
+					if (_farPoint == _closePoint) {
+						mPlayer.isGravityApplied(false);
+					} else {
+						mPlayer.isGravityApplied(true);
+					}
+				}
+			}
+		}
 	}
 	
 	private void getMapBlocks() {
@@ -254,10 +334,9 @@ public class Level1State extends BasicGameState {
 		int playerY = (int) (mMap.getHeight() - _playerTilePos.getY() - 1);
 		int playerX = (int) _playerTilePos.getX();
 		
-		System.out.println("X: " + playerX + " Y: " + playerY);
-		
 		if (mPlayer != null) {
 			// Get bounding tiles
+			// TODO: Create a better logic, this stuff really sucks
 			if (playerY < mMap.getHeight())
 				mPlayer.setTopBoundingTile(mMapBlocks[playerX][(Constants.SCREEN_HEIGHT / Constants.TILE_HEIGHT) - (mMap.getHeight() - playerY)]);
 			else 
