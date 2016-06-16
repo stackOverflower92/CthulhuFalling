@@ -277,16 +277,32 @@ public class Level1State extends BasicGameState {
 		}
 	}
 	
+	
+	// TODO: Change way to check collision, it will not work like this
+	private void updatePlayerCollisions() {
+		updatePlayerLeftCollision();
+		updatePlayerRightCollision();
+		updatePlayerTopCollision();
+		updatePlayerBottomCollision();
+	}
+	
 	private void getMapBlocks() {
 		// Create 2d array of tiles
 		mMapBlocks = new Tile[mMap.getWidth()][mMap.getHeight()];
 		
 		System.out.println("map[] len: " + mMapBlocks.length + " map[][] len: " + mMapBlocks[0].length);
 		
+		int _layerIndex = mMap.getLayerIndex("CollisionLayer");
+		
+		if (_layerIndex == -1) {
+			System.err.println("Can't load layer");
+			System.exit(0);
+		}
+		
 		for (int i = 0; i < mMap.getWidth(); i++) {
 			for (int j = 0; j < mMap.getHeight(); j++) {
-				int _tile = mMap.getTileId(i, j, 0);
-				String value = mMap.getTileProperty(_tile, "collision", "false");
+				int _tile = mMap.getTileId(i, j, _layerIndex);
+				String value = mMap.getTileProperty(_tile, "Collision", "false");
 				
 				if (value == "true") {
 					mMapBlocks[i][j] = new Tile(
@@ -363,6 +379,26 @@ public class Level1State extends BasicGameState {
 		mMap.render(0, Constants.SCREEN_HEIGHT - (mMap.getHeight() * mMap.getTileHeight()));
 	}
 	
+	private void renderWorldTiles(Graphics graphics) {
+		for (int i = 0; i < mMapBlocks.length; i++) {
+			for (int j = 0; j < mMapBlocks[i].length; j++) {
+				if (mMapBlocks[i][j].getType() == TileType.AIR) {
+					graphics.setColor(Color.blue);
+				} else {
+					graphics.setColor(Color.red);
+				}
+				
+				// Draw rect around tile
+				graphics.drawRect(
+						mMapBlocks[i][j].getRect().getX(),
+						mMapBlocks[i][j].getRect().getY(),
+						mMapBlocks[i][j].getRect().getWidth(),
+						mMapBlocks[i][j].getRect().getHeight()
+				);
+			}
+		}
+	}
+	
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
@@ -417,7 +453,9 @@ public class Level1State extends BasicGameState {
 			// Draw player
 			mPlayer.render(graphics);
 			
+			// TODO: Remove following methods for release
 			mPlayer.renderBoundingTiles(graphics);
+			renderWorldTiles(graphics);
 		}
 		if (mCurrentLevelState == LevelState.FINISHED) {
 			// Draw finish level stuff
