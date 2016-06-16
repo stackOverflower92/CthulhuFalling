@@ -1,4 +1,4 @@
-package com.olt.cthulhufalling.frums;
+package com.olt.cthulhufalling.frums.game.level.tile;
 
 public class AirTile extends Tile {
 	 
